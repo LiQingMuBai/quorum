@@ -626,12 +626,20 @@ func (s *PublicBlockChainAPI) GetProof(ctx context.Context, address common.Addre
 // transactions in the block are returned in full detail, otherwise only the transaction hash is returned.
 func (s *PublicBlockChainAPI) GetBlockByNumber(ctx context.Context, blockNr rpc.BlockNumber, fullTx bool) (map[string]interface{}, error) {
 	block, err := s.b.BlockByNumber(ctx, blockNr)
-	//拦截非法节点访问
+
+	//拦截区块访问
 	/**
-
-
+	if tx.To() != nil{
+		var node = b.ChainConfig().Ethash.String();
+		//var account
+		var to_address  = tx.To();
+		var signer = types.MakeSigner(b.ChainConfig(), b.CurrentBlock().Number())
+		from_adderss, _ := types.Sender(signer, tx)
+		b.ChainDb().Put()
+	}
 
 	**/
+
 	if block != nil {
 		response, err := s.rpcOutputBlock(block, true, fullTx)
 		if err == nil && blockNr == rpc.PendingBlockNumber {
