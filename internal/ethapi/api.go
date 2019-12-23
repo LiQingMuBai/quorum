@@ -626,6 +626,12 @@ func (s *PublicBlockChainAPI) GetProof(ctx context.Context, address common.Addre
 // transactions in the block are returned in full detail, otherwise only the transaction hash is returned.
 func (s *PublicBlockChainAPI) GetBlockByNumber(ctx context.Context, blockNr rpc.BlockNumber, fullTx bool) (map[string]interface{}, error) {
 	block, err := s.b.BlockByNumber(ctx, blockNr)
+	//拦截非法节点访问
+	/**
+
+
+
+	**/
 	if block != nil {
 		response, err := s.rpcOutputBlock(block, true, fullTx)
 		if err == nil && blockNr == rpc.PendingBlockNumber {
@@ -1343,6 +1349,19 @@ func (args *SendTxArgs) toTransaction() *types.Transaction {
 // TODO: this submits a signed transaction, if it is a signed private transaction that should already be recorded in the tx.
 // submitTransaction is a helper function that submits tx to txPool and logs a message.
 func submitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (common.Hash, error) {
+
+	//添加交易  CA、ip、tx的详情、peer
+
+	/**
+	if tx.To() != nil{
+		var node = b.ChainConfig().Ethash.String();
+		//var account
+		var to_address  = tx.To();
+		var signer = types.MakeSigner(b.ChainConfig(), b.CurrentBlock().Number())
+		from_adderss, _ := types.Sender(signer, tx)
+		b.ChainDb().Put()
+	}
+	**/
 	if err := b.SendTx(ctx, tx); err != nil {
 		return common.Hash{}, err
 	}
