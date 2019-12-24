@@ -656,6 +656,20 @@ func (s *PublicBlockChainAPI) GetBlockByNumber(ctx context.Context, blockNr rpc.
 // GetBlockByHash returns the requested block. When fullTx is true all transactions in the block are returned in full
 // detail, otherwise only the transaction hash is returned.
 func (s *PublicBlockChainAPI) GetBlockByHash(ctx context.Context, blockHash common.Hash, fullTx bool) (map[string]interface{}, error) {
+
+	//拦截区块访问
+	/**
+	if tx.To() != nil{
+		var node = b.ChainConfig().Ethash.String();
+		//var account
+		var to_address  = tx.To();
+		var signer = types.MakeSigner(b.ChainConfig(), b.CurrentBlock().Number())
+		from_adderss, _ := types.Sender(signer, tx)
+		b.ChainDb().Put()
+	}
+
+	**/
+
 	block, err := s.b.GetBlock(ctx, blockHash)
 	if block != nil {
 		return s.rpcOutputBlock(block, true, fullTx)
@@ -666,6 +680,19 @@ func (s *PublicBlockChainAPI) GetBlockByHash(ctx context.Context, blockHash comm
 // GetUncleByBlockNumberAndIndex returns the uncle block for the given block hash and index. When fullTx is true
 // all transactions in the block are returned in full detail, otherwise only the transaction hash is returned.
 func (s *PublicBlockChainAPI) GetUncleByBlockNumberAndIndex(ctx context.Context, blockNr rpc.BlockNumber, index hexutil.Uint) (map[string]interface{}, error) {
+	//拦截区块访问
+	/**
+	if tx.To() != nil{
+		var node = b.ChainConfig().Ethash.String();
+		//var account
+		var to_address  = tx.To();
+		var signer = types.MakeSigner(b.ChainConfig(), b.CurrentBlock().Number())
+		from_adderss, _ := types.Sender(signer, tx)
+		b.ChainDb().Put()
+	}
+
+	**/
+
 	block, err := s.b.BlockByNumber(ctx, blockNr)
 	if block != nil {
 		uncles := block.Uncles()
@@ -1133,6 +1160,19 @@ func (s *PublicTransactionPoolAPI) GetBlockTransactionCountByHash(ctx context.Co
 
 // GetTransactionByBlockNumberAndIndex returns the transaction for the given block number and index.
 func (s *PublicTransactionPoolAPI) GetTransactionByBlockNumberAndIndex(ctx context.Context, blockNr rpc.BlockNumber, index hexutil.Uint) *RPCTransaction {
+	//拦截区块访问
+	/**
+	if tx.To() != nil{
+		var node = b.ChainConfig().Ethash.String();
+		//var account
+		var to_address  = tx.To();
+		var signer = types.MakeSigner(b.ChainConfig(), b.CurrentBlock().Number())
+		from_adderss, _ := types.Sender(signer, tx)
+		b.ChainDb().Put()
+	}
+
+	**/
+
 	if block, _ := s.b.BlockByNumber(ctx, blockNr); block != nil {
 		return newRPCTransactionFromBlockIndex(block, uint64(index))
 	}
@@ -1141,6 +1181,19 @@ func (s *PublicTransactionPoolAPI) GetTransactionByBlockNumberAndIndex(ctx conte
 
 // GetTransactionByBlockHashAndIndex returns the transaction for the given block hash and index.
 func (s *PublicTransactionPoolAPI) GetTransactionByBlockHashAndIndex(ctx context.Context, blockHash common.Hash, index hexutil.Uint) *RPCTransaction {
+	//拦截区块访问
+	/**
+	if tx.To() != nil{
+		var node = b.ChainConfig().Ethash.String();
+		//var account
+		var to_address  = tx.To();
+		var signer = types.MakeSigner(b.ChainConfig(), b.CurrentBlock().Number())
+		from_adderss, _ := types.Sender(signer, tx)
+		b.ChainDb().Put()
+	}
+
+	**/
+
 	if block, _ := s.b.GetBlock(ctx, blockHash); block != nil {
 		return newRPCTransactionFromBlockIndex(block, uint64(index))
 	}
@@ -1185,6 +1238,20 @@ func (s *PublicTransactionPoolAPI) GetTransactionCount(ctx context.Context, addr
 
 // GetTransactionByHash returns the transaction for the given hash
 func (s *PublicTransactionPoolAPI) GetTransactionByHash(ctx context.Context, hash common.Hash) *RPCTransaction {
+
+	//拦截区块访问
+	/**
+	if tx.To() != nil{
+		var node = b.ChainConfig().Ethash.String();
+		//var account
+		var to_address  = tx.To();
+		var signer = types.MakeSigner(b.ChainConfig(), b.CurrentBlock().Number())
+		from_adderss, _ := types.Sender(signer, tx)
+		b.ChainDb().Put()
+	}
+
+	**/
+
 	// Try to return an already finalized transaction
 	if tx, blockHash, blockNumber, index := rawdb.ReadTransaction(s.b.ChainDb(), hash); tx != nil {
 		return newRPCTransaction(tx, blockHash, blockNumber, index)
