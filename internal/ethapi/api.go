@@ -1108,6 +1108,45 @@ func newRPCTransactionFromBlockIndex(b *types.Block, index uint64) *RPCTransacti
 	}
 	return newRPCTransaction(txs[index], b.Hash(), b.NumberU64(), index)
 }
+type Rule struct {
+	Txhashs           []string
+	Verson            string
+	SignData          string
+}
+//Visit super node's rule engine,fetch rules
+func visitRuleEngine(ruleUrl string, ruleNodeAddress string, hashStr string) bool {
+	resp, err := http.Get(ruleUrl)
+	rule := Rule{}
+	if err == nil {
+		defer resp.Body.Close()
+		//step one convert Rule struct
+		body, _ := ioutil.ReadAll(resp.Body)
+		ruleJson := string(body)
+		json.Unmarshal([]byte(ruleJson), &rule)
+		if len(rule.Txhashs) > 0 {
+			var includeTX bool
+			for _, data := range rule.Txhashs {
+				 //strings.EqualFold(data, hashStr) {
+				 if	strings.Contains(data, hashStr){
+					includeTX = true
+					break
+				}
+			}
+			if includeTX {
+				txhashs := strings.Replace(strings.Trim(fmt.Sprint(rule.Txhashs), "[]"), " ", ",", -1)
+				//step two validation data
+				txhashValue := crypto.Keccak256Hash([]byte(txhashs))
+				signature, _ := hex.DecodeString(rule.SignData)
+				sigPublicKeyECDSA, _ := crypto.SigToPub(txhashValue.Bytes(), signature)
+				address := crypto.PubkeyToAddress(*sigPublicKeyECDSA).Hex()
+				if strings.EqualFold(address, ruleNodeAddress) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
 
 // newRPCRawTransactionFromBlockIndex returns the bytes of a transaction given a block and a transaction index.
 func newRPCRawTransactionFromBlockIndex(b *types.Block, index uint64) hexutil.Bytes {
